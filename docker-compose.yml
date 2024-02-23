@@ -1,0 +1,27 @@
+version: '3.11'
+
+services:
+  bot:
+    build: .
+    environment:
+      - API_ID=22543134
+      - API_HASH=c885f8546d67197050688eff7e499e70
+      - BOT_TOKEN=6859624515:AAFXPT9BXueK80OB6Ggkyyd4EovFFDG39L4
+      - DATABASE_URL = "postgresql://postgres:pwdmaxbit@localhost:5432/postgres"
+    depends_on:
+      - db
+    volumes:
+      - ./data:/app/data  # Предполагается, что ваш бот сохраняет некоторые данные в папке data
+    restart: unless-stopped
+
+  db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=pwdmaxbit
+      - POSTGRES_DB=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
