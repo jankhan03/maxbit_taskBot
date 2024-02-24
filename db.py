@@ -52,6 +52,14 @@ def complete_task(task_id):
     finally:
         session.close()
 
+def get_user_id_by_telegram_id(telegram_id):
+    session = Session()
+    try:
+        user = session.query(User).filter(User.telegram_id == telegram_id).first()
+        return user.id if user else None
+    finally:
+        session.close()
+
 #
 # import bcrypt
 # import psycopg2
