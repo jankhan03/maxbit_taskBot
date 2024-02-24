@@ -1,8 +1,19 @@
 import psycopg2
 from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import settings
-from settings import DATABASE_URL
 from db import register_user, add_task, get_tasks, complete_task
+
+# Функция для отправки сообщения с инлайн кнопками для управления задачами
+def send_task_management_buttons(client, chat_id):
+    markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Добавить задачу", callback_data="add_task")],
+        [InlineKeyboardButton("Редактировать задачу", callback_data="edit_task")],
+        [InlineKeyboardButton("Удалить задачу", callback_data="delete_task")],
+        [InlineKeyboardButton("Завершить задачу", callback_data="complete_task")]
+    ])
+    client.send_message(chat_id, "Выберите действие:", reply_markup=markup)
+
 
 app = Client(
     "my_task_bot",
@@ -11,6 +22,8 @@ app = Client(
     bot_token=settings.BOT_TOKEN
 )
 # обернуть в классы все стейты, добавить инлайн кнопки сделать класс состояний, добавить все переменные стейты
+# добавить все модели с sql alchemy и добавить редактирование
+
 USER_STATES_REG = {}
 USER_DATA = {}
 USER_STATES_ALL = {}
@@ -36,6 +49,14 @@ def start_register(client, message):
     USER_DATA[user_id] = {"telegram_id": user_id}
     return
 
+@app.on_callback_query()
+def callback_query_handler(client, callback_query):
+    if callback_query.data == "view_tasks":
+        # Логика для отображения задач пользователя
+        pass
+    elif callback_query.data == "add_task":
+        # Логика для добавления новой задачи
+        pass
 
 @app.on_message(filters.all)  #нужен допфильтр + понять как докеризировать
 def input_handler(client, message):
@@ -122,7 +143,7 @@ def input_handler(client, message):
 
 
 def get_user_id_by_telegram_id(telegram_id):
-    conn = psycopg2.connect(DATABASE_URL)
+    conn = psycopg2.connect(settings.DATABASE_URL)
     cursor = conn.cursor()
     try:
         cursor.execute("SELECT id FROM users WHERE telegram_id = %s", (telegram_id,))

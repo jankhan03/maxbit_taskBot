@@ -1,3 +1,4 @@
+
 version: '3.11'
 
 services:
@@ -7,7 +8,8 @@ services:
       - API_ID=22543134
       - API_HASH=c885f8546d67197050688eff7e499e70
       - BOT_TOKEN=6859624515:AAFXPT9BXueK80OB6Ggkyyd4EovFFDG39L4
-      - DATABASE_URL = "postgresql://postgres:pwdmaxbit@localhost:5432/postgres"
+      - DATABASE_URL = "postgresql://postgres:pwdmaxbit@db:5432/postgres"
+
     depends_on:
       - db
     volumes:
