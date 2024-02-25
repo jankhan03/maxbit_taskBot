@@ -18,6 +18,22 @@ def register_user(telegram_id, username, password, name):
     finally:
         session.close()
 
+def edit_task_status(task_id, new_status):
+    session = Session()
+    try:
+        task = session.query(Task).filter(Task.id == task_id).first()
+        if task:
+            task.status = new_status
+            session.commit()
+            return True
+        else:
+            return False
+    except Exception as e:
+        session.rollback()
+        logger.info(f"Ошибка при изменении статуса задачи: {e}")
+    finally:
+        session.close()
+
 def delete_task(task_id):
     session = Session()
     try:
@@ -61,24 +77,3 @@ def get_tasks(user_id):
         return [(task.id, task.title, task.description, task.status) for task in tasks]
     finally:
         session.close()
-
-def complete_task(task_id):
-    session = Session()
-    try:
-        task = session.query(Task).filter(Task.id == task_id).first()
-        if task:
-            task.status = 'completed'
-            session.commit()
-    except Exception as e:
-        session.rollback()
-        logger.info(f"Ошибка при обновлении задачи: {e}")
-    finally:
-        session.close()
-
-# def get_user_id_by_telegram_id(telegram_id):
-#     session = Session()
-#     try:
-#         user = session.query(User).filter(cast(User.telegram_id, Integer) == telegram_id).first()
-#         return user.id if user else None
-#     finally:
-#         session.close()

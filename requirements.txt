@@ -1,0 +1,14 @@
+APScheduler==3.10.4
+bcrypt==4.1.2
+config==0.5.1
+psycopg2==2.9.9
+psycopg2-binary==2.9.9
+pyaes==1.6.1
+Pyrogram==2.0.106
+PySocks==1.7.1
+pytz==2024.1
+six==1.16.0
+SQLAlchemy==2.0.27
+TgCrypto==1.2.5
+transitions==0.9.0
+tzlocal==5.2
