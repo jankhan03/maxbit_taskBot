@@ -194,7 +194,7 @@ def input_handler(client: Client, message: Message) -> None:
         logger.info(f"User {user_id} entered password")
         register_user(telegram_id, username, password, name)
         logger.info(f"User {user_id} registered successfully")
-        message.reply_text("Регистрация прошла успешно!\n Для создания задач перейдите в главное меню с помощью команды /start.")
+        message.reply_text("Регистрация прошла успешно!\nДля создания задач перейдите в главное меню с помощью команды /start.")
         user_state.delete_state(user_id)
         user_state.delete_data(user_id)
 
