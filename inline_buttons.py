@@ -1,5 +1,7 @@
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
+'''В этом файле мы создадим inline кнопки, для использования в остальном проекте'''
+
 def task_buttons(task_id):
     return InlineKeyboardMarkup(
         [

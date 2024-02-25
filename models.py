@@ -1,7 +1,9 @@
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, BIGINT
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from settings import DATABASE_URL
+
+'''В этом файле мы создадим модели наших таблиц'''
 
 Base = declarative_base()
 
@@ -11,11 +13,10 @@ Session = sessionmaker(bind=engine)
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    telegram_id = Column(String, unique=True)
+    telegram_id = Column(BIGINT, unique=True)
     username = Column(String)
     password_hash = Column(String)
     name = Column(String)
-    tasks = relationship("Task", back_populates="user")
 
 class Task(Base):
     __tablename__ = 'tasks'
@@ -23,7 +24,6 @@ class Task(Base):
     title = Column(String)
     description = Column(String)
     status = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship("User", back_populates="tasks")
+    user_id = Column(Integer)
 
 Base.metadata.create_all(engine)

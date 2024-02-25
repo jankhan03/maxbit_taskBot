@@ -8,22 +8,18 @@ services:
       - API_ID=22543134
       - API_HASH=c885f8546d67197050688eff7e499e70
       - BOT_TOKEN=6859624515:AAFXPT9BXueK80OB6Ggkyyd4EovFFDG39L4
-      - DATABASE_URL = "postgresql://postgres:pwdmaxbit@db:5432/postgres"
+#      - DATABASE_URL = "postgresql://postgres:pwdmaxbit@localhost:5432/postgres"
+      - DATABASE_URL = "postgresql://habrpguser:pgpwd4habr@postgres:5432/habrdb"
 
-    depends_on:
-      - db
-    volumes:
-      - ./data:/app/data  # Предполагается, что ваш бот сохраняет некоторые данные в папке data
-    restart: unless-stopped
 
-  db:
-    image: postgres:latest
+
+  postgres:
+    image: postgres:13.3
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=pwdmaxbit
-      - POSTGRES_DB=postgres
+      POSTGRES_DB: "habrdb"
+      POSTGRES_USER: "habrpguser"
+      POSTGRES_PASSWORD: "pgpwd4habr"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
+      - .:/docker-entrypoint-initdb.db
+    ports:
+      - "5432:5432"

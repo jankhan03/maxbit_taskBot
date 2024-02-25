@@ -1,19 +1,42 @@
 from models import User, Task, Session
 import bcrypt
+from sqlalchemy import cast, Integer
+from logger import logger
+
+'''В этом файле мы работаем с базами данных и sql запросами, обернутыми в алхимию для удобства и безопасности'''
 
 def register_user(telegram_id, username, password, name):
     session = Session()
     try:
-        # Хеширование пароля
         password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-        # Создание нового пользователя
-        new_user = User(telegram_id=telegram_id, username=username, password_hash=password_hash, name=name)
+        new_user = User(telegram_id=int(telegram_id), username=username, password_hash=password_hash, name=name)
         session.add(new_user)
         session.commit()
     except Exception as e:
         session.rollback()
-        print(f"Ошибка при добавлении пользователя: {e}")
+        logger.info(f"Ошибка при добавлении пользователя: {e}")
+    finally:
+        session.close()
+
+def delete_task(task_id):
+    session = Session()
+    try:
+        task = session.query(Task).filter(Task.id == task_id).first()
+        if task:
+            session.delete(task)
+            session.commit()
+            logger.info(f"Задача {task.title} успешно удалена.")
+    except Exception as e:
+        session.rollback()
+        logger.info(f"Ошибка при удалении задачи: {e}")
+    finally:
+        session.close()
+
+def user_exists(telegram_id):
+    session = Session()
+    try:
+        user = session.query(User).filter(cast(User.telegram_id, Integer) == telegram_id).first()
+        return user is not None
     finally:
         session.close()
 
@@ -24,10 +47,10 @@ def add_task(user_id, title, description, status):
         new_task = Task(user_id=user_id, title=title, description=description, status=status)
         session.add(new_task)
         session.commit()
-        print(f"Задача {title} успешно создана.")
+        logger.info(f"Задача {title} успешно создана.")
     except Exception as e:
         session.rollback()
-        print(f"Ошибка при добавлении задачи: {e}")
+        logger.info(f"Ошибка при добавлении задачи: {e}")
     finally:
         session.close()
 
@@ -48,75 +71,14 @@ def complete_task(task_id):
             session.commit()
     except Exception as e:
         session.rollback()
-        print(f"Ошибка при обновлении задачи: {e}")
+        logger.info(f"Ошибка при обновлении задачи: {e}")
     finally:
         session.close()
 
-def get_user_id_by_telegram_id(telegram_id):
-    session = Session()
-    try:
-        user = session.query(User).filter(User.telegram_id == telegram_id).first()
-        return user.id if user else None
-    finally:
-        session.close()
-
-#
-# import bcrypt
-# import psycopg2
-# from settings import DATABASE_URL
-#
-#
-# def register_user(telegram_id, username, password, name):
-#     conn = psycopg2.connect(DATABASE_URL)
-#     cursor = conn.cursor()
-#
-#     # Хеширование пароля
-#     password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-#
+# def get_user_id_by_telegram_id(telegram_id):
+#     session = Session()
 #     try:
-#         cursor.execute("INSERT INTO users (telegram_id, username, password_hash, name) VALUES (%s, %s, %s, %s)",
-#                        (telegram_id, username, password_hash, name))
-#         conn.commit()
-#     except psycopg2.Error as e:
-#         print(f"Ошибка при добавлении пользователя: {e}")
+#         user = session.query(User).filter(cast(User.telegram_id, Integer) == telegram_id).first()
+#         return user.id if user else None
 #     finally:
-#         cursor.close()
-#         conn.close()
-#
-#
-# def add_task(telegram_id, title, description, status):
-#     conn = psycopg2.connect(DATABASE_URL)
-#     cursor = conn.cursor()
-#     try:
-#         cursor.execute("INSERT INTO tasks (user_id, title, description, status) VALUES (%s, %s, %s, %s)",
-#                        (telegram_id, title, description, status))
-#         conn.commit()
-#     except psycopg2.Error as e:
-#         print(f"Ошибка при добавлении задачи: {e}")
-#         conn.rollback()
-#     finally:
-#         cursor.close()
-#         conn.close()
-#
-#
-# def get_tasks(user_id):
-#     conn = psycopg2.connect(DATABASE_URL)
-#     cursor = conn.cursor()
-#     try:
-#         cursor.execute("SELECT id, title, description, status FROM tasks WHERE user_id = %s", (user_id,))
-#         tasks = cursor.fetchall()
-#
-#         return tasks
-#     finally:
-#         cursor.close()
-#         conn.close()
-#
-# def complete_task(task_id):
-#     conn = psycopg2.connect(DATABASE_URL)
-#     cursor = conn.cursor()
-#     try:
-#         cursor.execute("UPDATE tasks SET status = 'completed' WHERE id = %s", (task_id,))
-#         conn.commit()
-#     finally:
-#         cursor.close()
-#         conn.close()
+#         session.close()

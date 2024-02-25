@@ -1,16 +1,12 @@
-import logging
-import psycopg2
+from logger import logger
 from pyrogram import Client, filters
 import settings
-from db import register_user, add_task, get_tasks, complete_task, get_user_id_by_telegram_id
+from db import register_user, add_task, get_tasks, complete_task, user_exists, delete_task
+
 from states import UserState
 from inline_buttons import task_buttons, send_status_selection
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardMarkup, KeyboardButton
 
-
-# Настройка логирования
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
 
 user_state = UserState()
 
@@ -21,6 +17,7 @@ app = Client(
     bot_token=settings.BOT_TOKEN
 )
 
+
 @app.on_message(filters.command("register"))
 def start_register(client, message):
     user_id = message.from_user.id
@@ -29,12 +26,26 @@ def start_register(client, message):
     logger.info(f"User {user_id} started registration process.")
     message.reply_text("Пожалуйста, введите ваше имя пользователя:")
 
+import text
 @app.on_message(filters.command("start"))
 def start(client, message):
     user_id = message.from_user.id
-    logger.info(f"User {user_id} started the bot.")
-    message.reply_text("Привет! Добро пожаловать в бота для управления задачами. Для регистрации введите /register.")
-
+    if user_exists(user_id):
+        # Пользователь существует, показываем кнопки для существующих пользователей
+        buttons = ReplyKeyboardMarkup(
+            [
+                [KeyboardButton("/add_task"), KeyboardButton("/my_tasks")]
+            ], resize_keyboard=True, one_time_keyboard=True
+        )
+        message.reply_text("Выберите действие:", reply_markup=buttons)
+    else:
+        # Пользователь не найден, показываем кнопку регистрации
+        buttons = ReplyKeyboardMarkup(
+            [
+                [KeyboardButton("/register")]
+            ], resize_keyboard=True, one_time_keyboard=True
+        )
+        message.reply_text("Добро пожаловать! Для начала работы с ботом, пожалуйста, зарегистрируйтесь.", reply_markup=buttons)
 
 @app.on_message(filters.command("add_task"))
 def add_task_start(client, message):
@@ -56,7 +67,7 @@ def show_tasks(client, message):
                 message.reply_text(task_message, reply_markup=task_buttons(task_id))
         else:
             message.reply_text("You have no tasks.", reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("➕ Add New Task", callback_data="add_new_task")]] #не работает, перенести логику
+                [[InlineKeyboardButton("➕ Add New Task", callback_data="/add_task")]] #не работает, перенести логику
             ))
     except Exception as e:
         logger.error(f"Error retrieving tasks for user {user_id}: {e}")
@@ -68,18 +79,23 @@ def callback_query_handler(client, callback_query):
     data = callback_query.data
     user_id = callback_query.from_user.id
 
-    if data == "add_new_task": #не работает, перенести логику
+    if data == "/add_task": #не работает, перенести логику
+        # add_task_start(client, message=())
         # Logic to start the process of adding a new task
         client.send_message(user_id, "Send me the title of the new task:")
     elif data.startswith("edit_"):
         task_id = data.split("_")[1]
         # Logic to start editing the specified task
         client.send_message(user_id, f"Send me the new details for task {task_id}:")
+
+
     elif data.startswith("delete_"):
-        task_id = data.split("_")[1]
-        # Logic to delete the specified task
-        # delete_task(task_id)  # Ensure you have a function to handle task deletion
-        client.send_message(user_id, f"Task {task_id} deleted.")
+        task_id = int(data.split("_")[1])  # Преобразуем ID задачи из строки в число
+        delete_task(task_id)  # Вызываем функцию удаления задачи
+        client.answer_callback_query(callback_query.id, "Задача успешно удалена.")
+        client.delete_messages(chat_id=callback_query.message.chat.id,
+                               message_ids=[
+                                   callback_query.message.chat.id])  # Опционально: удаляем сообщение с задачей
 
     elif data.startswith("status_"):
         status = data.split("_")[1]

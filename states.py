@@ -1,3 +1,6 @@
+
+'''В этом файле мы создадим класс состояний, для работы с FSM'''
+
 class UserState:
     def __init__(self):
         self.user_states = {}
