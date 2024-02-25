@@ -34,6 +34,17 @@ def edit_task_status(task_id, new_status):
     finally:
         session.close()
 
+def task_exists(task_id):
+    session = Session()
+    try:
+        task = session.query(Task).filter(Task.id == task_id).first()
+        return task is not None
+    except Exception as e:
+        logger.info(f"Ошибка при проверке существования задачи: {e}")
+        return False
+    finally:
+        session.close()
+
 def delete_task(task_id):
     session = Session()
     try:
