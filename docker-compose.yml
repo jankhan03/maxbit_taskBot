@@ -5,19 +5,19 @@ services:
   bot:
     build: .
     environment:
-      - API_ID=22543134
-      - API_HASH=c885f8546d67197050688eff7e499e70
-      - BOT_TOKEN=6859624515:AAFXPT9BXueK80OB6Ggkyyd4EovFFDG39L4
-      - DATABASE_URL = "postgresql://habrpguser:pgpwd4habr@postgres:5432/habrdb"
+      - API_ID=api_id
+      - API_HASH=api_hash
+      - BOT_TOKEN=token
+      - DATABASE_URL = url
 
 
 
   postgres:
     image: postgres:13.3
     environment:
-      POSTGRES_DB: "habrdb"
-      POSTGRES_USER: "habrpguser"
-      POSTGRES_PASSWORD: "pgpwd4habr"
+      POSTGRES_DB: "db"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "pwd"
     volumes:
       - .:/docker-entrypoint-initdb.db
     ports:

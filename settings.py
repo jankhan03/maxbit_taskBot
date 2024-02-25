@@ -2,8 +2,8 @@
 '''В этом файле мы храним значения, необходимые для работы с tg и с базами данных.
 Так же в дальнейшем можно использовать os и отдельный файл для хранения личных данных, таким образом личные данные не появляются в общем доступе.'''
 
-API_ID = "22543134"
-API_HASH = "c885f8546d67197050688eff7e499e70"
-BOT_TOKEN = "6859624515:AAFXPT9BXueK80OB6Ggkyyd4EovFFDG39L4"
+API_ID = ""
+API_HASH = ""
+BOT_TOKEN = ""
 
-DATABASE_URL = "postgresql://habrpguser:pgpwd4habr@postgres:5432/habrdb"
+DATABASE_URL = ""

@@ -1,7 +1,7 @@
 from typing import Any
 from pyrogram import Client
 from logger import logger
-from db import add_task, delete_task, task_exists, edit_task_status
+from db import add_task, delete_task, task_exists#, edit_task_status
 from states import UserState
 from inline_buttons import send_status_selection, back_to_menu_keyboard
 

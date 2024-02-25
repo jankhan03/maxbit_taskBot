@@ -5,8 +5,9 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyb
 def task_buttons(task_id):
     return InlineKeyboardMarkup(
         [
-            [InlineKeyboardButton("✏️ Редактировать", callback_data=f"edit_{task_id}"),
-             InlineKeyboardButton("❌ Удалить", callback_data=f"delete_{task_id}")]
+            [InlineKeyboardButton("❌ Удалить", callback_data=f"delete_{task_id}")]
+            # [InlineKeyboardButton("✏️ Редактировать", callback_data=f"edit_{task_id}"),
+            #  InlineKeyboardButton("❌ Удалить", callback_data=f"delete_{task_id}")]
         ]
     )
 
