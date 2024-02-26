@@ -7,7 +7,8 @@
 Инструкции по Развертыванию и Запуску  
 Для запуска контейнера с приложением необходимо:  
 Клонировать репозиторий с кодом бота.  
-Добавить в файл settings.py переменные окружения API_ID, API_HASH, и BOT_TOKEN, а так же DATABASE_URL.  
+Добавить в файл settings.py переменные окружения API_ID, API_HASH, и BOT_TOKEN, а так же DATABASE_URL. 
+Переменные API_ID, API_HASH можно получить на странице https://my.telegram.org/apps, а BOT_TOKEN в BotFather.
 Добавить в файл docker-compose.yml переменные окружения API_ID, API_HASH, и BOT_TOKEN, а так же POSTGRES_DB, POSTGRES_USER и POSTGRES_PASSWORD.  
 Запустить скрипт бота с помощью команды python bot.py.  
 Ввести в терминал команду docker-compose up -d.  
