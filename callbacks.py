@@ -1,9 +1,9 @@
 from typing import Any
 from pyrogram import Client
 from logger import logger
-from db import add_task, delete_task, task_exists#, edit_task_status
+from db import add_task, delete_task
 from states import UserState
-from inline_buttons import send_status_selection, back_to_menu_keyboard
+
 
 def register_callbacks(client: Client, user_state: UserState) -> None:
     @client.on_callback_query()
@@ -40,14 +40,8 @@ def register_callbacks(client: Client, user_state: UserState) -> None:
             user_state.delete_state(user_id)
             user_state.delete_data(user_id)
 
-
         elif data.startswith("edit_"):
             task_id = data.split("_")[1]
-            if task_exists(task_id):
-                user_state.set_state(user_id, "STATE_EDIT_TASK")
-                user_state.set_data(user_id, "task_id", task_id)
-                send_status_selection(client, callback_query.message.chat.id, user_id)
-                delete_task(task_id)
-            else:
-                client.answer_callback_query(callback_query.id, "Задача не найдена. Вернитесь в меню")
-
+            logger.info(f"task_id {task_id}")
+            delete_task(task_id)
+            user_state.set_state(user_id, "STATE_EDIT_TASK")

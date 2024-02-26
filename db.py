@@ -18,47 +18,6 @@ def register_user(telegram_id, username, password, name):
     finally:
         session.close()
 
-# def edit_task_status(task_id, new_status):
-#     session = Session()
-#     try:
-#         task = session.query(Task).filter(Task.id == task_id).first()
-#         if task:
-#             task.status = new_status
-#             session.commit()
-#             return True
-#         else:
-#             return False
-#     except Exception as e:
-#         session.rollback()
-#         logger.info(f"Ошибка при изменении статуса задачи: {e}")
-#     finally:
-#         session.close()
-
-# def edit_task_status(task_id, new_status, new_title=None, new_description=None):
-#     session = Session()
-#     try:
-#         task = session.query(Task).filter(Task.id == task_id).first()
-#         if task:
-#             task.status = new_status
-#             if new_title is not None:
-#                 task.title = new_title
-#                 logger.info(f"Updating title to {new_title}")
-#             if new_description is not None:
-#                 task.description = new_description
-#                 logger.info(f"Updating description to {new_description}")
-#             session.commit()
-#             logger.info(f"Task {task_id} status updated to {new_status}")
-#             return True
-#         else:
-#             logger.info(f"Task {task_id} not found")
-#             return False
-#     except Exception as e:
-#         session.rollback()
-#         logger.info(f"Error updating task status: {e}")
-#         return False
-#     finally:
-#         session.close()
-
 def task_exists(task_id):
     session = Session()
     try:

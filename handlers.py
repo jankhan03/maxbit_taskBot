@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import  Message
 from logger import logger
-from db import register_user, add_task, get_tasks, user_exists#, edit_task_status
+from db import register_user, add_task, get_tasks, user_exists
 from states import UserState
 from inline_buttons import task_buttons, send_status_selection, registration, tasks, back_to_menu_keyboard
 
@@ -101,7 +101,7 @@ def register_handlers(client: Client, user_state: UserState) -> None:
                     task_id = task[0]
                     task_message = f"Title: {task[1]}\nDescription: {task[2]}\nStatus: {task[3]}"
                     message.reply_text(task_message, reply_markup=task_buttons(task_id))
-                message.reply_text("Выберите задачу или вернитесь в главное меню.",
+                message.reply_text("Выберите задачу или вернитесь в главное меню. Для редактирования задачи нажмите кнопку Редактировать и введите любое слово в чат.",
                                    reply_markup=back_to_menu_keyboard())
             else:
                 message.reply_text("У вас нет задач. Перейдите в главное меню и добавьте задачу.", reply_markup=back_to_menu_keyboard())
@@ -167,26 +167,16 @@ def register_handlers(client: Client, user_state: UserState) -> None:
             message.reply_text("Введите описание задачи:")
             user_state.set_state(user_id, "STATE_DESCRIPTION")
 
-
         elif current_state == "STATE_DESCRIPTION":
             description = message.text
             user_state.set_data(user_id, "description", description)
             logger.info(f"User {user_id} entered description: {description}")
             send_status_selection(client, message.chat.id, user_id)  # Call to send status buttons
+            user_state.set_state(user_id, "STATE_STATUS")
 
-
-        # elif current_state == "STATE_EDIT_TASK":
-        #     if text.startswith("status_"):
-        #         new_status = text.split("_")[1]
-        #         task_id = user_state.get_data(user_id, "task_id")
-        #         if edit_task_status(task_id, new_status):
-        #             message.reply_text(f"Статус задачи успешно изменен на {new_status}.", reply_markup=back_to_menu_keyboard())
-        #         else:
-        #             message.reply_text("Произошла ошибка при изменении статуса задачи.", reply_markup=back_to_menu_keyboard())
-        #         user_state.delete_state(user_id)
-        #         user_state.delete_data(user_id, "task_id")
-        #     else:
-        #         message.reply_text("Пожалуйста, выберите статус задачи из предложенного меню.")
+        elif current_state == "STATE_EDIT_TASK":
+            message.reply_text(f"Введите название обновленной задачи:")
+            user_state.set_state(user_id, "STATE_TITLE")
 
         elif current_state == "STATE_STATUS":
             status = message.text
@@ -198,3 +188,4 @@ def register_handlers(client: Client, user_state: UserState) -> None:
             message.reply_text("Задача успешно добавлена.", reply_markup=back_to_menu_keyboard())
             user_state.delete_state(user_id)
             user_state.delete_data(user_id)
+
