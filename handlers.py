@@ -101,6 +101,8 @@ def register_handlers(client: Client, user_state: UserState) -> None:
                     task_id = task[0]
                     task_message = f"Title: {task[1]}\nDescription: {task[2]}\nStatus: {task[3]}"
                     message.reply_text(task_message, reply_markup=task_buttons(task_id))
+                message.reply_text("Выберите задачу или вернитесь в главное меню.",
+                                   reply_markup=back_to_menu_keyboard())
             else:
                 message.reply_text("У вас нет задач. Перейдите в главное меню и добавьте задачу.", reply_markup=back_to_menu_keyboard())
         except Exception as e:
